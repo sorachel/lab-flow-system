@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>南京鼓楼医院中心实验室实验流程管理系统</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .links-panel {
+            margin-top: 30px;
+            padding: 20px;
+            background: #e8f5e8;
+            border-radius: 5px;
+            display: none;
+        }
+        .link-box {
+            margin: 15px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #4CAF50;
+        }
+        .link-box.worker {
+            border-left-color: #2196F3;
+        }
+        .link-box.viewer {
+            border-left-color: #FF9800;
+        }
+        .link-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .link-url {
+            word-break: break-all;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 3px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+        .copy-btn {
+            background: #666;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .copy-btn:hover {
+            background: #555;
+        }
+        .note {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        .success-message {
+            color: #4CAF50;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .debug-info {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #666;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 南京鼓楼医院中心实验室</h1>
+        <h2 style="color: #666; font-size: 18px; margin-bottom: 20px;">创建新实验项目</h2>
+         
+        <div class="form-group">
+            <label>📝 项目名称：</label>
+            <input type="text" id="projectName" placeholder="例如：基因组学平台-001">
+        </div>
+        
+         <!-- 新增：科室输入框 -->
+        <div class="form-group">
+            <label>📄科室：</label>
+            <input type="text" id="department" placeholder="例如：肿瘤科、神经内科、消化科等">
+        </div>
+
+        <div class="form-group">
+            <label>📄 项目描述：</label>
+            <textarea id="projectDesc" rows="3" placeholder="请输入项目详细描述..."></textarea>
+        </div>
+        
+        <button onclick="createProject()">✨ 生成项目链接</button>
+        
+        <!-- 生成的链接展示区 -->
+        <div class="links-panel" id="linksPanel">
+            <div class="success-message">✅ 项目已创建成功！</div>
+            
+            <!-- 显示项目概要信息（包括科室） -->
+            <div style="background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 14px;">
+                <span id="projectSummary"></span>
+            </div>
+            
+            <!-- 工作者链接 -->
+            <div class="link-box worker">
+                <span class="link-label">👨‍🔬 工作者链接（可编辑）</span>
+                <div class="link-url" id="workerLink"></div>
+                <button class="copy-btn" onclick="copyLink('worker')">复制链接</button>
+                <div class="note">将此链接发送给实验人员，他们可以更新实验进度</div>
+            </div>
+            
+            <!-- 查看者链接 -->
+            <div class="link-box viewer">
+                <span class="link-label">👀 客户查看链接（只读）</span>
+                <div class="link-url" id="viewerLink"></div>
+                <button class="copy-btn" onclick="copyLink('viewer')">复制链接</button>
+                <div class="note">将此链接发送给客户，他们可以实时查看实验进度</div>
+            </div>
+            
+            <p style="color: #666; font-size: 14px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
+                ⚡ 提示：链接已自动保存，关闭页面不会丢失。每个链接都是唯一的，可以分别分享给不同的人。
+            </p>
+        </div>
+
+        <!-- 调试信息（默认隐藏） -->
+        <div class="debug-info" id="debugInfo">
+            <h4>调试信息：</h4>
+            <p id="debugPath"></p>
+        </div>
+    </div>
+
+    <script>
+        // 生成唯一的项目ID
+        function generateProjectId() {
+            return 'proj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+        
+        // 生成访问令牌
+        function generateToken(projectId, role) {
+            return role + '_' + projectId + '_' + Date.now();
+        }
+        
+        // 创建新项目
+        function createProject() {
+            // 获取表单值（新增：获取科室）
+            const department = document.getElementById('department').value;
+            const projectName = document.getElementById('projectName').value;
+            const projectDesc = document.getElementById('projectDesc').value;
+            
+            if (!department) {
+                alert('请输入科室名称');
+                return;
+            }
+            
+            if (!projectName) {
+                alert('请输入项目名称');
+                return;
+            }
+            
+            // 生成项目ID和令牌
+            const projectId = generateProjectId();
+            const workerToken = generateToken(projectId, 'worker');
+            const viewerToken = generateToken(projectId, 'viewer');
+            
+            // 保存项目信息到localStorage（新增：包含科室）
+            const projectData = {
+                id: projectId,
+                department: department,  // 新增科室字段
+                name: projectName,
+                description: projectDesc,
+                createdAt: new Date().toISOString(),
+                steps: [
+                    { id: 1, name: '收到实验样品', status: 'pending' },
+                    { id: 2, name: '进行实验', status: 'pending' },
+                    { id: 3, name: '进行分析', status: 'pending' },
+                    { id: 4, name: '得到最终结果', status: 'pending' }
+                ]
+            };
+            
+            // 存储项目数据
+            localStorage.setItem(`project_${projectId}`, JSON.stringify(projectData));
+            localStorage.setItem(`token_${workerToken}`, projectId);
+            localStorage.setItem(`token_${viewerToken}`, projectId);
+            
+            // 生成链接
+            const currentPath = window.location.pathname;
+            const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+            let baseUrl;
+            
+            if (window.location.protocol === 'file:') {
+                baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'project.html';
+            } else {
+                baseUrl = window.location.origin + basePath + 'project.html';
+            }
+            
+            const workerUrl = `${baseUrl}?token=${encodeURIComponent(workerToken)}&role=worker`;
+            const viewerUrl = `${baseUrl}?token=${encodeURIComponent(viewerToken)}&role=viewer`;
+            
+            // 显示链接
+            document.getElementById('workerLink').textContent = workerUrl;
+            document.getElementById('viewerLink').textContent = viewerUrl;
+            
+            // 显示项目概要（新增：显示科室信息）
+            document.getElementById('projectSummary').innerHTML = `
+                <strong>科室：</strong> ${department}<br>
+                <strong>项目：</strong> ${projectName}
+            `;
+            
+            // 显示链接面板
+            document.getElementById('linksPanel').style.display = 'block';
+            
+            console.log('✅ 项目创建成功！');
+            console.log('科室:', department);
+            console.log('📎 工作者链接:', workerUrl);
+            console.log('📎 查看者链接:', viewerUrl);
+            
+            // 清空表单（可选）
+            document.getElementById('department').value = '';
+            document.getElementById('projectName').value = '';
+            document.getElementById('projectDesc').value = '';
+        }
+        
+        // 复制链接到剪贴板
+        function copyLink(role) {
+            const link = document.getElementById(role === 'worker' ? 'workerLink' : 'viewerLink').textContent;
+            
+            navigator.clipboard.writeText(link).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ 已复制！';
+                btn.style.background = '#4CAF50';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#666';
+                }, 2000);
+            }).catch(err => {
+                const textarea = document.createElement('textarea');
+                textarea.value = link;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('链接已复制到剪贴板！');
+            });
+        }
+
+        // 页面加载完成后检查localStorage中是否有项目
+        window.onload = function() {
+            let projectCount = 0;
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('project_')) {
+                    projectCount++;
+                }
+            }
+            
+            if (projectCount > 0) {
+                console.log(`📊 当前有 ${projectCount} 个已创建的项目`);
+            }
+        }
+    </script>
+</body>
+</html>
