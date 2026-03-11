@@ -33,17 +33,6 @@
             flex-wrap: wrap;
         }
         
-        .nav-content h2 {
-            color: #2c3e50;
-            font-size: 1.3rem;
-        }
-        
-        @media (max-width: 768px) {
-            .nav-content h2 {
-                font-size: 1rem;
-            }
-        }
-        
         .hospital-badge {
             background: #4CAF50;
             color: white;
@@ -97,12 +86,6 @@
             flex-wrap: wrap;
         }
         
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -126,11 +109,46 @@
             color: white;
         }
         
-        .role-badge.terminated {
-            background: #dc3545;
-            color: white;
+        /* 工作者选择器样式 */
+        .worker-selector {
+            margin-right: 15px;
         }
         
+        .worker-selector select {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #2196F3;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+        }
+        
+        .worker-selector select:focus {
+            border-color: #1976d2;
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
+        
+        /* 进度条 */
+        .progress-bar {
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50, #8BC34A);
+            transition: width 0.3s ease;
+        }
+        
+        .progress-fill.terminated {
+            background: linear-gradient(90deg, #dc3545, #ff6b6b);
+        }
+        
+        /* 步骤卡片 */
         .progress-steps {
             display: grid;
             gap: 20px;
@@ -143,7 +161,6 @@
             padding: 20px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: transform 0.2s;
-            position: relative;
         }
         
         .step-card:hover {
@@ -244,6 +261,7 @@
             font-weight: bold;
             transition: all 0.3s;
             margin-right: 10px;
+            margin-bottom: 5px;
         }
         
         .btn-primary {
@@ -282,69 +300,116 @@
             background: #e0a800;
         }
         
+        .btn-restart {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-restart:hover {
+            background: #138496;
+        }
+        
         .btn:disabled {
             background: #ccc;
             cursor: not-allowed;
         }
         
-        .progress-bar {
-            height: 8px;
-            background: #f0f0f0;
-            border-radius: 4px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #4CAF50, #8BC34A);
-            transition: width 0.3s ease;
-        }
-        
-        .progress-fill.terminated {
-            background: linear-gradient(90deg, #dc3545, #ff6b6b);
-        }
-        
-        .share-link {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 15px;
+        /* 日志面板样式 */
+        .logs-panel {
             margin-top: 30px;
-            font-size: 14px;
-        }
-        
-        .share-link a {
-            color: #4CAF50;
-            text-decoration: none;
-            word-break: break-all;
-        }
-        
-        .timestamp {
-            font-size: 12px;
-            color: #999;
-            margin-top: 10px;
-        }
-        
-        .error-container {
-            text-align: center;
-            padding: 50px;
             background: white;
             border-radius: 8px;
-            max-width: 500px;
-            margin: 100px auto;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        .error-container h2 {
-            color: #f44336;
-            margin-bottom: 20px;
+        .logs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
         }
         
-        .error-container a {
+        .logs-header h3 {
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .log-count {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: normal;
+        }
+        
+        .logs-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        
+        .log-entry:hover {
+            background: #f8f9fa;
+        }
+        
+        .log-time {
+            color: #999;
+            font-size: 12px;
+            min-width: 160px;
+        }
+        
+        .log-operator {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 12px;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .log-action {
+            color: #333;
+            flex: 1;
+        }
+        
+        .log-action.terminated {
+            color: #dc3545;
+        }
+        
+        .log-action.completed {
             color: #4CAF50;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 20px;
+        }
+        
+        .log-action.started {
+            color: #2196F3;
+        }
+        
+        .log-action.restarted {
+            color: #17a2b8;
+        }
+        
+        .empty-logs {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-style: italic;
         }
         
         .termination-reason {
@@ -412,27 +477,21 @@
             .nav-content {
                 flex-direction: column;
                 gap: 10px;
-                text-align: center;
             }
             
-            .step-header {
+            .log-entry {
                 flex-direction: column;
                 align-items: flex-start;
+                gap: 5px;
             }
             
-            .step-status {
-                margin-left: 40px;
-                margin-top: 5px;
+            .log-time {
+                min-width: auto;
             }
             
-            .worker-controls .btn {
-                margin-bottom: 10px;
+            .btn {
                 width: 100%;
-            }
-            
-            .project-header {
-                flex-direction: column;
-                align-items: flex-start;
+                margin-right: 0;
             }
         }
     </style>
@@ -441,15 +500,21 @@
     <div class="navbar">
         <div class="nav-content">
             <h2>南京鼓楼医院中心实验室</h2>
-            <div>
+            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+                <!-- 工作者选择器（只在工作者模式显示） -->
+                <div id="workerSelector" style="display: none;" class="worker-selector">
+                    <select id="workerSelect" onchange="changeWorker()">
+                        <option value="">选择工作者</option>
+                    </select>
+                </div>
                 <span class="hospital-badge">实验流程跟踪系统</span>
-                <span id="roleDisplay" style="margin-left: 10px;"></span>
+                <span id="roleDisplay"></span>
             </div>
         </div>
     </div>
     
     <div class="project-info" id="projectInfo">
-        <!-- 项目信息会动态填充，包括科室 -->
+        <!-- 项目信息会动态填充 -->
     </div>
     
     <div class="container">
@@ -459,12 +524,25 @@
         
         <!-- 全局终止状态显示 -->
         <div id="globalTerminationInfo" style="display: none; background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #dc3545;">
-            <strong>⚠️ 项目已终止</strong>
+            <strong>项目已终止</strong>
             <p id="globalTerminationReason"></p>
         </div>
         
         <div class="progress-steps" id="stepsContainer">
             <!-- 步骤会动态生成 -->
+        </div>
+        
+        <!-- 日志面板 -->
+        <div class="logs-panel" id="logsPanel">
+            <div class="logs-header">
+                <h3>
+                    操作日志
+                    <span class="log-count" id="logCount">0</span>
+                </h3>
+            </div>
+            <div class="logs-container" id="logsContainer">
+                <!-- 日志会动态显示在这里 -->
+            </div>
         </div>
         
         <div class="share-link" id="shareLink" style="display: none;">
@@ -481,12 +559,24 @@
     <!-- 终止原因输入模态框 -->
     <div id="terminationModal" class="modal">
         <div class="modal-content">
-            <h3>⚠️ 填写终止原因</h3>
+            <h3>填写终止原因</h3>
             <p>请说明为什么终止该步骤：</p>
             <textarea id="terminationReason" rows="4" placeholder="例如：样品污染、设备故障、操作失误等..."></textarea>
             <div class="modal-buttons">
                 <button class="btn btn-secondary" onclick="closeModal()">取消</button>
                 <button class="btn btn-danger" onclick="confirmTermination()">确认终止</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 重启确认模态框 -->
+    <div id="restartModal" class="modal">
+        <div class="modal-content">
+            <h3>确认重启</h3>
+            <p>确定要重启该步骤吗？重启后将可以重新开始操作。</p>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeRestartModal()">取消</button>
+                <button class="btn btn-restart" onclick="confirmRestart()">确认重启</button>
             </div>
         </div>
     </div>
@@ -500,6 +590,7 @@
         // 当前项目数据
         let currentProject = null;
         let pendingTerminationStep = null;
+        let pendingRestartStep = null;
         
         // 初始化页面
         function init() {
@@ -530,15 +621,23 @@
             // 显示角色标识
             document.getElementById('roleDisplay').innerHTML = `
                 <span class="role-badge ${role === 'worker' ? 'worker' : 'viewer'}">
-                    ${role === 'worker' ? '👨‍🔬 工作者模式' : '👀 查看模式'}
+                    ${role === 'worker' ? '工作者模式' : '查看模式'}
                 </span>
             `;
             
-            // 显示项目信息（包含科室）
+            // 如果是工作者模式，显示工作者选择器
+            if (role === 'worker') {
+                displayWorkerSelector();
+            }
+            
+            // 显示项目信息
             displayProjectInfo();
             
             // 显示步骤
             displaySteps();
+            
+            // 显示日志
+            displayLogs();
             
             // 更新进度条
             updateProgress();
@@ -552,31 +651,61 @@
             }
         }
         
-        // 显示项目信息（修改版，包含科室）
+        // 显示工作者选择器
+        function displayWorkerSelector() {
+            const workerSelector = document.getElementById('workerSelector');
+            const workerSelect = document.getElementById('workerSelect');
+            
+            if (currentProject.workers && currentProject.workers.length > 0) {
+                workerSelector.style.display = 'block';
+                workerSelect.innerHTML = '<option value="">选择工作者</option>';
+                
+                currentProject.workers.forEach(worker => {
+                    const option = document.createElement('option');
+                    option.value = worker;
+                    option.textContent = worker;
+                    workerSelect.appendChild(option);
+                });
+                
+                // 从localStorage获取上次选择的工作者
+                const lastWorker = localStorage.getItem(`lastWorker_${currentProject.id}`);
+                if (lastWorker && currentProject.workers.includes(lastWorker)) {
+                    workerSelect.value = lastWorker;
+                }
+            }
+        }
+        
+        // 切换工作者
+        function changeWorker() {
+            const workerSelect = document.getElementById('workerSelect');
+            const currentWorker = workerSelect.value;
+            
+            if (currentWorker) {
+                localStorage.setItem(`lastWorker_${currentProject.id}`, currentWorker);
+            }
+        }
+        
+        // 获取当前选中的工作者
+        function getCurrentWorker() {
+            if (role !== 'worker') return null;
+            
+            const workerSelect = document.getElementById('workerSelect');
+            return workerSelect.value || '未知工作者';
+        }
+        
+        // 显示项目信息
         function displayProjectInfo() {
             const infoDiv = document.getElementById('projectInfo');
-            
-            // 格式化日期
-            const createdDate = new Date(currentProject.createdAt).toLocaleString('zh-CN', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
             
             infoDiv.innerHTML = `
                 <div class="project-header">
                     <span class="department-tag">${currentProject.department || '未指定科室'}</span>
                     <span class="project-name">${currentProject.name}</span>
                 </div>
-                <p style="color: #666; margin: 15px 0; line-height: 1.6;">${currentProject.description || '无项目描述'}</p>
+                <p style="color: #666; margin: 15px 0;">${currentProject.description || '无项目描述'}</p>
                 <div class="project-meta">
-                    <span class="meta-item">创建时间：${createdDate}</span>
-                    <span class="meta-item">项目ID：${currentProject.id.substring(0, 8)}...</span>
-                    ${currentProject.terminated ? `
-                        <span class="meta-item" style="color: #dc3545;">⚠️ 终止时间：${new Date(currentProject.terminatedAt).toLocaleString()}</span>
-                    ` : ''}
+                    <span>创建时间：${new Date(currentProject.createdAt).toLocaleString()}</span>
+                    <span>工作者：${currentProject.workers ? currentProject.workers.join('、') : '未指定'}</span>
                 </div>
             `;
         }
@@ -612,9 +741,6 @@
                     <div class="worker-controls" id="controls-${step.id}">
                         ${getStepControls(step)}
                     </div>
-                    <div class="timestamp" id="timestamp-${step.id}">
-                        ${step.updatedAt ? '上次更新：' + new Date(step.updatedAt).toLocaleString() : ''}
-                    </div>
                 `;
                 
                 container.appendChild(stepCard);
@@ -645,42 +771,183 @@
         // 获取状态文本
         function getStatusText(status) {
             switch(status) {
-                case 'completed': return '✅ 已完成';
-                case 'in-progress': return '🔄 进行中';
-                case 'terminated': return '⚠️ 已终止';
-                default: return '⏳ 等待中';
+                case 'completed': return '已完成';
+                case 'in-progress': return '进行中';
+                case 'terminated': return '已终止';
+                default: return '等待中';
             }
         }
         
         // 获取步骤控制按钮
         function getStepControls(step) {
-            // 如果项目已全局终止或当前步骤已终止，只显示终止信息
-            if (currentProject.terminated || step.status === 'terminated') {
-                return '<p style="color: #dc3545;">⚠️ 此步骤已终止</p>';
-            }
-            
-            // 如果已完成，不显示控制按钮
-            if (step.status === 'completed') {
-                return '<p>✓ 已完成</p>';
+            if (currentProject.terminated && step.status !== 'terminated') {
+                return '<p style="color: #dc3545;">项目已终止，无法操作</p>';
             }
             
             let buttons = '';
             
-            // 开始按钮
+            // 正常操作按钮
             if (step.status === 'pending') {
                 buttons += `<button class="btn btn-primary" onclick="updateStep(${step.id}, 'in-progress')">开始</button>`;
-            } 
-            // 进行中显示完成按钮
-            else if (step.status === 'in-progress') {
+            } else if (step.status === 'in-progress') {
                 buttons += `<button class="btn btn-secondary" onclick="updateStep(${step.id}, 'completed')">完成</button>`;
             }
             
-            // 终止按钮（只要不是已完成或已终止，都可以终止）
+            // 终止按钮（只要不是已完成，都可以终止）
             if (step.status !== 'completed' && step.status !== 'terminated') {
-                buttons += `<button class="btn btn-danger" onclick="openTerminationModal(${step.id})">⚠️ 出现问题终止</button>`;
+                buttons += `<button class="btn btn-danger" onclick="openTerminationModal(${step.id})">终止</button>`;
             }
             
-            return buttons;
+            // 重启按钮（只有已终止的步骤可以重启）
+            if (step.status === 'terminated') {
+                buttons += `<button class="btn btn-restart" onclick="openRestartModal(${step.id})">重启</button>`;
+            }
+            
+            return buttons || '<p>无操作</p>';
+        }
+        
+        // 更新步骤状态
+        function updateStep(stepId, newStatus) {
+            if (role !== 'worker') {
+                alert('您没有权限修改');
+                return;
+            }
+            
+            const currentWorker = getCurrentWorker();
+            if (!currentWorker) {
+                alert('请先选择工作者');
+                return;
+            }
+            
+            if (currentProject.terminated) {
+                alert('项目已终止，无法继续操作');
+                return;
+            }
+            
+            if (!canUpdateStep(stepId, newStatus)) {
+                alert('请先完成前面的步骤');
+                return;
+            }
+            
+            const step = currentProject.steps.find(s => s.id === stepId);
+            if (step) {
+                const oldStatus = step.status;
+                step.status = newStatus;
+                step.updatedAt = new Date().toISOString();
+                
+                // 添加日志
+                const action = getActionText(oldStatus, newStatus);
+                addLog(currentWorker, `步骤${stepId}：${step.name}`, action);
+                
+                if (newStatus === 'completed') {
+                    delete step.terminationReason;
+                    delete step.terminatedAt;
+                }
+                
+                // 保存到localStorage
+                const projectId = localStorage.getItem(`token_${token}`);
+                localStorage.setItem(`project_${projectId}`, JSON.stringify(currentProject));
+                
+                // 刷新界面
+                displaySteps();
+                displayLogs();
+                updateProgress();
+                
+                if (stepId === 4 && newStatus === 'completed') {
+                    alert('恭喜！实验流程全部完成！');
+                }
+            }
+        }
+        
+        // 获取操作文本
+        function getActionText(oldStatus, newStatus) {
+            if (oldStatus === 'pending' && newStatus === 'in-progress') return '开始';
+            if (oldStatus === 'in-progress' && newStatus === 'completed') return '完成';
+            if (newStatus === 'terminated') return '终止';
+            if (oldStatus === 'terminated' && newStatus === 'pending') return '重启';
+            return '更新';
+        }
+        
+        // 添加日志
+        function addLog(operator, step, action, reason = '') {
+            const log = {
+                operator: operator,
+                step: step,
+                action: action,
+                reason: reason,
+                timestamp: new Date().toISOString()
+            };
+            
+            if (!currentProject.logs) {
+                currentProject.logs = [];
+            }
+            
+            currentProject.logs.unshift(log);
+            
+            if (currentProject.logs.length > 100) {
+                currentProject.logs = currentProject.logs.slice(0, 100);
+            }
+        }
+        
+        // 显示日志
+        function displayLogs() {
+            const container = document.getElementById('logsContainer');
+            const countSpan = document.getElementById('logCount');
+            
+            if (!currentProject.logs || currentProject.logs.length === 0) {
+                container.innerHTML = '<div class="empty-logs">暂无操作日志</div>';
+                countSpan.textContent = '0';
+                return;
+            }
+            
+            countSpan.textContent = currentProject.logs.length;
+            
+            let html = '';
+            currentProject.logs.forEach(log => {
+                const time = new Date(log.timestamp).toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit'
+                });
+                
+                let actionClass = '';
+                if (log.action.includes('终止')) actionClass = 'terminated';
+                else if (log.action.includes('完成')) actionClass = 'completed';
+                else if (log.action.includes('开始')) actionClass = 'started';
+                else if (log.action.includes('重启')) actionClass = 'restarted';
+                
+                html += `
+                    <div class="log-entry">
+                        <span class="log-time">${time}</span>
+                        <span class="log-operator">${log.operator}</span>
+                        <span class="log-action ${actionClass}">
+                            ${log.step} - ${log.action}
+                            ${log.reason ? `<span style="color: #dc3545;">（${log.reason}）</span>` : ''}
+                        </span>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // 检查是否可以更新步骤
+        function canUpdateStep(stepId, newStatus) {
+            // 检查是否有任何步骤已终止（除了当前步骤）
+            const hasTerminated = currentProject.steps.some(s => s.status === 'terminated' && s.id !== stepId);
+            if (hasTerminated) {
+                alert('项目中有其他步骤已终止，无法继续');
+                return false;
+            }
+            
+            if (newStatus === 'in-progress' && stepId > 1) {
+                const prevStep = currentProject.steps.find(s => s.id === stepId - 1);
+                return prevStep && prevStep.status === 'completed';
+            }
+            return true;
         }
         
         // 打开终止模态框
@@ -695,11 +962,10 @@
             document.getElementById('terminationReason').value = '';
         }
         
-        // 关闭模态框
+        // 关闭终止模态框
         function closeModal() {
             document.getElementById('terminationModal').style.display = 'none';
             pendingTerminationStep = null;
-            document.getElementById('terminationReason').value = '';
         }
         
         // 确认终止
@@ -723,115 +989,124 @@
                 return;
             }
             
-            // 更新当前步骤状态
+            const currentWorker = getCurrentWorker();
+            if (!currentWorker) {
+                alert('请先选择工作者');
+                return;
+            }
+            
             const step = currentProject.steps.find(s => s.id === stepId);
             if (step) {
                 step.status = 'terminated';
                 step.terminationReason = reason;
                 step.terminatedAt = new Date().toISOString();
                 
-                // 可以选择是否终止后续步骤
+                addLog(currentWorker, `步骤${stepId}：${step.name}`, '终止', reason);
+                
                 const terminateAll = confirm('是否要终止所有后续步骤？\n点击"确定"终止所有，点击"取消"只终止当前步骤');
                 
                 if (terminateAll) {
-                    // 终止所有后续步骤
                     currentProject.steps.forEach(s => {
                         if (s.id > stepId && s.status !== 'completed') {
                             s.status = 'terminated';
                             s.terminationReason = `因步骤${stepId}终止而终止: ${reason}`;
                             s.terminatedAt = new Date().toISOString();
+                            
+                            addLog(currentWorker, `步骤${s.id}：${s.name}`, '终止', `因步骤${stepId}终止`);
                         }
                     });
                     
-                    // 标记项目为已终止
                     currentProject.terminated = true;
                     currentProject.terminatedAt = new Date().toISOString();
                     currentProject.terminationReason = reason;
                     
-                    // 显示全局终止信息
                     document.getElementById('globalTerminationInfo').style.display = 'block';
                     document.getElementById('globalTerminationReason').textContent = `终止原因：${reason}`;
                 }
                 
-                // 保存到localStorage
                 const projectId = localStorage.getItem(`token_${token}`);
                 localStorage.setItem(`project_${projectId}`, JSON.stringify(currentProject));
                 
-                // 刷新界面
-                displayProjectInfo(); // 刷新项目信息以显示终止时间
+                displayProjectInfo();
                 displaySteps();
+                displayLogs();
                 updateProgress();
                 
-                // 根据终止情况显示不同消息
                 if (terminateAll) {
-                    alert('⚠️ 项目已终止，所有后续步骤已标记为终止');
+                    alert('项目已终止，所有后续步骤已标记为终止');
                 } else {
                     alert(`步骤${stepId}已标记为终止`);
                 }
             }
         }
         
-        // 更新步骤状态（原有功能）
-        function updateStep(stepId, newStatus) {
+        // 打开重启模态框
+        function openRestartModal(stepId) {
             if (role !== 'worker') {
                 alert('您没有权限修改');
                 return;
             }
             
-            // 检查项目是否已终止
-            if (currentProject.terminated) {
-                alert('项目已终止，无法继续操作');
+            pendingRestartStep = stepId;
+            document.getElementById('restartModal').style.display = 'block';
+        }
+        
+        // 关闭重启模态框
+        function closeRestartModal() {
+            document.getElementById('restartModal').style.display = 'none';
+            pendingRestartStep = null;
+        }
+        
+        // 确认重启
+        function confirmRestart() {
+            if (!pendingRestartStep) return;
+            
+            restartStep(pendingRestartStep);
+            closeRestartModal();
+        }
+        
+        // 重启步骤
+        function restartStep(stepId) {
+            if (role !== 'worker') {
+                alert('您没有权限修改');
                 return;
             }
             
-            // 检查步骤顺序
-            if (!canUpdateStep(stepId, newStatus)) {
-                alert('请先完成前面的步骤');
+            const currentWorker = getCurrentWorker();
+            if (!currentWorker) {
+                alert('请先选择工作者');
                 return;
             }
             
-            // 更新数据
             const step = currentProject.steps.find(s => s.id === stepId);
             if (step) {
-                step.status = newStatus;
+                step.status = 'pending';
                 step.updatedAt = new Date().toISOString();
                 
-                // 如果完成，删除终止相关信息
-                if (newStatus === 'completed') {
-                    delete step.terminationReason;
-                    delete step.terminatedAt;
+                // 清除终止相关信息
+                delete step.terminationReason;
+                delete step.terminatedAt;
+                
+                // 添加重启日志
+                addLog(currentWorker, `步骤${stepId}：${step.name}`, '重启');
+                
+                // 如果项目之前是全局终止，清除全局终止标记
+                if (currentProject.terminated) {
+                    currentProject.terminated = false;
+                    delete currentProject.terminatedAt;
+                    delete currentProject.terminationReason;
+                    document.getElementById('globalTerminationInfo').style.display = 'none';
                 }
                 
-                // 保存到localStorage
                 const projectId = localStorage.getItem(`token_${token}`);
                 localStorage.setItem(`project_${projectId}`, JSON.stringify(currentProject));
                 
-                // 刷新界面
                 displaySteps();
+                displayLogs();
                 updateProgress();
                 
-                // 如果是最后一步完成，显示祝贺
-                if (stepId === 4 && newStatus === 'completed') {
-                    alert('恭喜！实验流程全部完成！');
-                }
+                alert(`步骤${stepId}已重启，可以重新开始操作`);
             }
-        }
-        
-        // 检查是否可以更新步骤
-        function canUpdateStep(stepId, newStatus) {
-            // 检查是否有任何步骤已终止
-            const hasTerminated = currentProject.steps.some(s => s.status === 'terminated');
-            if (hasTerminated) {
-                alert('项目中有步骤已终止，无法继续');
-                return false;
-            }
-            
-            // 如果是开始新步骤，检查前一步是否完成
-            if (newStatus === 'in-progress' && stepId > 1) {
-                const prevStep = currentProject.steps.find(s => s.id === stepId - 1);
-                return prevStep && prevStep.status === 'completed';
-            }
-            return true;
         }
         
         // 检查全局终止状态
@@ -850,9 +1125,10 @@
             const progress = (completedSteps / 4) * 100;
             document.getElementById('progressFill').style.width = `${progress}%`;
             
-            // 如果有终止，进度条变红
-            if (currentProject.terminated || currentProject.steps.some(s => s.status === 'terminated')) {
+            if (currentProject.terminated) {
                 document.getElementById('progressFill').classList.add('terminated');
+            } else {
+                document.getElementById('progressFill').classList.remove('terminated');
             }
         }
         
@@ -893,10 +1169,10 @@
         // 显示错误
         function showError(message) {
             document.body.innerHTML = `
-                <div class="error-container">
-                    <h2>❌ 错误</h2>
+                <div style="text-align: center; padding: 50px; background: white; max-width: 500px; margin: 100px auto; border-radius: 8px;">
+                    <h2 style="color: #f44336;">错误</h2>
                     <p>${message}</p>
-                    <a href="index.html">返回创建页面</a>
+                    <a href="index.html" style="color: #4CAF50; text-decoration: none; display: inline-block; margin-top: 20px;">返回创建页面</a>
                 </div>
             `;
         }

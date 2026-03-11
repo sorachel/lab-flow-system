@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             padding: 20px;
             background: #f5f5f5;
@@ -17,6 +17,7 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
         }
         h1 {
             color: #333;
@@ -52,9 +53,23 @@
             font-size: 16px;
             cursor: pointer;
             transition: background 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
         }
         button:hover {
             background: #45a049;
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        .btn-info {
+            background: #17a2b8;
+        }
+        .btn-info:hover {
+            background: #138496;
         }
         .links-panel {
             margin-top: 30px;
@@ -88,6 +103,7 @@
             border-radius: 3px;
             font-family: monospace;
             margin: 10px 0;
+            font-size: 12px;
         }
         .copy-btn {
             background: #666;
@@ -112,52 +128,366 @@
             font-weight: bold;
             margin-bottom: 15px;
         }
-        .debug-info {
-            background: #f0f0f0;
-            padding: 10px;
+        
+        /* 步骤配置样式 */
+        .steps-config {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .step-item {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
             border-radius: 5px;
+            border-left: 3px solid #4CAF50;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .step-header strong {
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .step-controls button {
+            padding: 3px 8px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+        
+        .step-controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .step-name-input, .step-desc-input {
+            margin-bottom: 10px;
+        }
+        
+        .step-name-input input, .step-desc-input textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+        
+        /* 项目目录样式 */
+        .projects-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .projects-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+        
+        .projects-header h2 {
+            color: #333;
+            font-size: 20px;
+        }
+        
+        .project-count {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        
+        .project-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .project-filters input,
+        .project-filters select {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .project-filters input {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .projects-list {
+            display: grid;
+            gap: 15px;
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        .project-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #4CAF50;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .project-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .project-item.terminated {
+            border-left-color: #dc3545;
+            background: #fff5f5;
+        }
+        
+        .project-item.completed {
+            border-left-color: #4CAF50;
+            background: #f0f9f0;
+        }
+        
+        .project-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .project-item-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .project-item-dept {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+        
+        .project-item-meta {
+            display: flex;
+            gap: 15px;
             font-size: 12px;
             color: #666;
-            margin-top: 20px;
-            display: none;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .project-item-workers {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .worker-tag {
+            background: #e9ecef;
+            color: #495057;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+        
+        .project-item-progress {
+            margin: 10px 0;
+            height: 4px;
+            background: #f0f0f0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: #4CAF50;
+            transition: width 0.3s;
+        }
+        
+        .progress-bar-fill.terminated {
+            background: #dc3545;
+        }
+        
+        .project-item-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .project-item-status {
+            font-size: 12px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            background: #e9ecef;
+        }
+        
+        .project-item-status.completed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .project-item-status.terminated {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .project-item-status.in-progress {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .project-links {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .project-link-btn {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .worker-link-btn {
+            background: #2196F3;
+        }
+        
+        .viewer-link-btn {
+            background: #FF9800;
+        }
+        
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 3px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        
+        .empty-projects {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .refresh-btn {
+            background: #6c757d;
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+        
+        .refresh-btn:hover {
+            background: #5a6268;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .project-item-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .project-links {
+                flex-direction: column;
+            }
+            
+            .step-header {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📋 南京鼓楼医院中心实验室</h1>
+        <h1>南京鼓楼医院中心实验室</h1>
         <h2 style="color: #666; font-size: 18px; margin-bottom: 20px;">创建新实验项目</h2>
-         
+        
+        <!-- 项目名称 -->
         <div class="form-group">
-            <label>📝 项目名称：</label>
+            <label>项目名称：</label>
             <input type="text" id="projectName" placeholder="例如：基因组学平台-001">
         </div>
         
-         <!-- 新增：科室输入框 -->
+        <!-- 科室输入框 -->
         <div class="form-group">
-            <label>📄科室：</label>
+            <label>科室：</label>
             <input type="text" id="department" placeholder="例如：肿瘤科、神经内科、消化科等">
         </div>
-
+        
+        <!-- 工作者姓名输入框 -->
         <div class="form-group">
-            <label>📄 项目描述：</label>
+            <label>工作者姓名（多个用逗号分隔）：</label>
+            <input type="text" id="workerNames" placeholder="例如：张三,李四,王五">
+            <div class="note">每个工作者会有独立的操作记录</div>
+        </div>
+
+        <!-- 实验步骤配置 -->
+        <div class="form-group">
+            <label>实验步骤配置：</label>
+            <div class="steps-config" id="stepsConfig"></div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="button" class="btn-secondary" onclick="addStep()">+ 添加步骤</button>
+                <button type="button" class="btn-info" onclick="resetToDefaultSteps()">重置默认步骤</button>
+            </div>
+            <div class="note">可以自定义步骤名称和内容，支持添加、删除、排序</div>
+        </div>
+
+        <!-- 项目描述 -->
+        <div class="form-group">
+            <label>项目描述：</label>
             <textarea id="projectDesc" rows="3" placeholder="请输入项目详细描述..."></textarea>
         </div>
         
-        <button onclick="createProject()">✨ 生成项目链接</button>
+        <button onclick="createProject()">生成项目链接</button>
         
         <!-- 生成的链接展示区 -->
         <div class="links-panel" id="linksPanel">
-            <div class="success-message">✅ 项目已创建成功！</div>
+            <div class="success-message">项目已创建成功！</div>
             
-            <!-- 显示项目概要信息（包括科室） -->
+            <!-- 显示项目概要信息 -->
             <div style="background: #f9f9f9; padding: 10px; border-radius: 5px; margin-bottom: 15px; font-size: 14px;">
                 <span id="projectSummary"></span>
             </div>
             
             <!-- 工作者链接 -->
             <div class="link-box worker">
-                <span class="link-label">👨‍🔬 工作者链接（可编辑）</span>
+                <span class="link-label">工作者链接（可编辑）</span>
                 <div class="link-url" id="workerLink"></div>
                 <button class="copy-btn" onclick="copyLink('worker')">复制链接</button>
                 <div class="note">将此链接发送给实验人员，他们可以更新实验进度</div>
@@ -165,25 +495,161 @@
             
             <!-- 查看者链接 -->
             <div class="link-box viewer">
-                <span class="link-label">👀 客户查看链接（只读）</span>
+                <span class="link-label">客户查看链接（只读）</span>
                 <div class="link-url" id="viewerLink"></div>
                 <button class="copy-btn" onclick="copyLink('viewer')">复制链接</button>
                 <div class="note">将此链接发送给客户，他们可以实时查看实验进度</div>
             </div>
             
             <p style="color: #666; font-size: 14px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">
-                ⚡ 提示：链接已自动保存，关闭页面不会丢失。每个链接都是唯一的，可以分别分享给不同的人。
+                提示：链接已自动保存，关闭页面不会丢失。每个链接都是唯一的，可以分别分享给不同的人。
             </p>
         </div>
+    </div>
 
-        <!-- 调试信息（默认隐藏） -->
-        <div class="debug-info" id="debugInfo">
-            <h4>调试信息：</h4>
-            <p id="debugPath"></p>
+    <!-- 项目目录面板 -->
+    <div class="projects-panel">
+        <div class="projects-header">
+            <h2>历史项目目录</h2>
+            <div>
+                <span class="project-count" id="projectCount">0</span>
+                <button class="refresh-btn" onclick="loadAndDisplayProjects()" style="margin-left: 10px;">刷新</button>
+            </div>
+        </div>
+        
+        <div class="project-filters">
+            <input type="text" id="searchProject" placeholder="搜索项目名称或科室..." oninput="filterProjects()">
+            <select id="statusFilter" onchange="filterProjects()">
+                <option value="all">全部状态</option>
+                <option value="in-progress">进行中</option>
+                <option value="completed">已完成</option>
+                <option value="terminated">已终止</option>
+            </select>
+            <select id="workerFilter" onchange="filterProjects()">
+                <option value="all">全部工作者</option>
+            </select>
+        </div>
+        
+        <div class="projects-list" id="projectsList">
+            <!-- 项目列表会动态显示在这里 -->
         </div>
     </div>
 
     <script>
+        // 默认步骤
+        const defaultSteps = [
+            { id: 1, name: '收到实验样品', description: '确认收到实验样品，检查样品状态和数量', status: 'pending' },
+            { id: 2, name: '进行实验', description: '按照实验方案进行实验操作，记录实验数据', status: 'pending' },
+            { id: 3, name: '进行分析', description: '分析实验数据，生成分析报告', status: 'pending' },
+            { id: 4, name: '得到最终结果', description: '整理实验结果，得出最终结论', status: 'pending' }
+        ];
+
+        // 当前步骤配置
+        let currentSteps = JSON.parse(JSON.stringify(defaultSteps));
+
+        // 初始化步骤配置显示
+        function initStepsConfig() {
+            renderStepsConfig();
+        }
+
+        // 渲染步骤配置
+        function renderStepsConfig() {
+            const container = document.getElementById('stepsConfig');
+            let html = '';
+            
+            currentSteps.forEach((step, index) => {
+                html += `
+                    <div class="step-item">
+                        <div class="step-header">
+                            <strong>步骤 ${index + 1}</strong>
+                            <div class="step-controls">
+                                <button class="btn-secondary" onclick="moveStepUp(${index})" ${index === 0 ? 'disabled' : ''} style="padding: 3px 8px;">↑</button>
+                                <button class="btn-secondary" onclick="moveStepDown(${index})" ${index === currentSteps.length - 1 ? 'disabled' : ''} style="padding: 3px 8px;">↓</button>
+                                <button class="delete-btn" onclick="removeStep(${index})" ${currentSteps.length <= 1 ? 'disabled' : ''} style="padding: 3px 8px;">×</button>
+                            </div>
+                        </div>
+                        <div class="step-name-input">
+                            <input type="text" value="${step.name}" placeholder="步骤名称" 
+                                   onchange="updateStepName(${index}, this.value)">
+                        </div>
+                        <div class="step-desc-input">
+                            <textarea placeholder="步骤描述" 
+                                      onchange="updateStepDescription(${index}, this.value)">${step.description || ''}</textarea>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // 添加步骤
+        function addStep() {
+            currentSteps.push({
+                id: currentSteps.length + 1,
+                name: `新步骤 ${currentSteps.length + 1}`,
+                description: '请输入步骤描述',
+                status: 'pending'
+            });
+            renderStepsConfig();
+        }
+
+        // 删除步骤
+        function removeStep(index) {
+            if (currentSteps.length <= 1) {
+                alert('至少保留一个步骤');
+                return;
+            }
+            currentSteps.splice(index, 1);
+            // 重新排序ID
+            currentSteps.forEach((step, idx) => {
+                step.id = idx + 1;
+            });
+            renderStepsConfig();
+        }
+
+        // 上移步骤
+        function moveStepUp(index) {
+            if (index > 0) {
+                [currentSteps[index - 1], currentSteps[index]] = [currentSteps[index], currentSteps[index - 1]];
+                // 重新排序ID
+                currentSteps.forEach((step, idx) => {
+                    step.id = idx + 1;
+                });
+                renderStepsConfig();
+            }
+        }
+
+        // 下移步骤
+        function moveStepDown(index) {
+            if (index < currentSteps.length - 1) {
+                [currentSteps[index], currentSteps[index + 1]] = [currentSteps[index + 1], currentSteps[index]];
+                // 重新排序ID
+                currentSteps.forEach((step, idx) => {
+                    step.id = idx + 1;
+                });
+                renderStepsConfig();
+            }
+        }
+
+        // 更新步骤名称
+        function updateStepName(index, value) {
+            currentSteps[index].name = value;
+        }
+
+        // 更新步骤描述
+        function updateStepDescription(index, value) {
+            currentSteps[index].description = value;
+        }
+
+        // 重置为默认步骤
+        function resetToDefaultSteps() {
+            if (confirm('确定要重置为默认步骤吗？当前修改将丢失。')) {
+                currentSteps = JSON.parse(JSON.stringify(defaultSteps));
+                renderStepsConfig();
+            }
+        }
+
         // 生成唯一的项目ID
         function generateProjectId() {
             return 'proj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -196,19 +662,36 @@
         
         // 创建新项目
         function createProject() {
-            // 获取表单值（新增：获取科室）
-            const department = document.getElementById('department').value;
-            const projectName = document.getElementById('projectName').value;
-            const projectDesc = document.getElementById('projectDesc').value;
+            // 获取表单值
+            const projectName = document.getElementById('projectName').value.trim();
+            const department = document.getElementById('department').value.trim();
+            const workerNamesInput = document.getElementById('workerNames').value.trim();
+            const projectDesc = document.getElementById('projectDesc').value.trim();
+            
+            // 验证必填字段
+            if (!projectName) {
+                alert('请输入项目名称');
+                return;
+            }
             
             if (!department) {
                 alert('请输入科室名称');
                 return;
             }
             
-            if (!projectName) {
-                alert('请输入项目名称');
+            // 验证步骤配置
+            if (currentSteps.length === 0) {
+                alert('至少需要一个实验步骤');
                 return;
+            }
+            
+            // 处理工作者姓名
+            let workerNames = ['默认工作者'];
+            if (workerNamesInput) {
+                workerNames = workerNamesInput.split(',').map(name => name.trim()).filter(name => name);
+                if (workerNames.length === 0) {
+                    workerNames = ['默认工作者'];
+                }
             }
             
             // 生成项目ID和令牌
@@ -216,19 +699,21 @@
             const workerToken = generateToken(projectId, 'worker');
             const viewerToken = generateToken(projectId, 'viewer');
             
-            // 保存项目信息到localStorage（新增：包含科室）
+            // 保存项目信息到localStorage
             const projectData = {
                 id: projectId,
-                department: department,  // 新增科室字段
+                department: department,
                 name: projectName,
-                description: projectDesc,
+                description: projectDesc || '无描述',
                 createdAt: new Date().toISOString(),
-                steps: [
-                    { id: 1, name: '收到实验样品', status: 'pending' },
-                    { id: 2, name: '进行实验', status: 'pending' },
-                    { id: 3, name: '进行分析', status: 'pending' },
-                    { id: 4, name: '得到最终结果', status: 'pending' }
-                ]
+                workers: workerNames,
+                logs: [],
+                steps: currentSteps.map(step => ({
+                    id: step.id,
+                    name: step.name,
+                    description: step.description,
+                    status: 'pending'
+                }))
             };
             
             // 存储项目数据
@@ -254,24 +739,30 @@
             document.getElementById('workerLink').textContent = workerUrl;
             document.getElementById('viewerLink').textContent = viewerUrl;
             
-            // 显示项目概要（新增：显示科室信息）
+            // 显示项目概要
             document.getElementById('projectSummary').innerHTML = `
                 <strong>科室：</strong> ${department}<br>
-                <strong>项目：</strong> ${projectName}
+                <strong>项目：</strong> ${projectName}<br>
+                <strong>工作者：</strong> ${workerNames.join('、')}<br>
+                <strong>步骤数：</strong> ${currentSteps.length}
             `;
             
             // 显示链接面板
             document.getElementById('linksPanel').style.display = 'block';
             
-            console.log('✅ 项目创建成功！');
-            console.log('科室:', department);
-            console.log('📎 工作者链接:', workerUrl);
-            console.log('📎 查看者链接:', viewerUrl);
+            console.log('项目创建成功！');
             
-            // 清空表单（可选）
-            document.getElementById('department').value = '';
+            // 清空表单
             document.getElementById('projectName').value = '';
+            document.getElementById('department').value = '';
+            document.getElementById('workerNames').value = '';
             document.getElementById('projectDesc').value = '';
+            
+            // 重置步骤配置
+            //resetToDefaultSteps();
+            
+            // 刷新项目列表
+            loadAndDisplayProjects();
         }
         
         // 复制链接到剪贴板
@@ -281,7 +772,7 @@
             navigator.clipboard.writeText(link).then(() => {
                 const btn = event.target;
                 const originalText = btn.textContent;
-                btn.textContent = '✅ 已复制！';
+                btn.textContent = '已复制！';
                 btn.style.background = '#4CAF50';
                 
                 setTimeout(() => {
@@ -298,20 +789,235 @@
                 alert('链接已复制到剪贴板！');
             });
         }
-
-        // 页面加载完成后检查localStorage中是否有项目
-        window.onload = function() {
-            let projectCount = 0;
+        
+        // 加载所有项目
+        function loadProjects() {
+            const projects = [];
+            
+            // 从localStorage获取所有项目
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 if (key && key.startsWith('project_')) {
-                    projectCount++;
+                    try {
+                        const projectData = JSON.parse(localStorage.getItem(key));
+                        if (projectData && projectData.id) {
+                            // 获取项目的token
+                            let workerToken = null;
+                            let viewerToken = null;
+                            
+                            for (let j = 0; j < localStorage.length; j++) {
+                                const tokenKey = localStorage.key(j);
+                                if (tokenKey && tokenKey.startsWith('token_')) {
+                                    const tokenProjectId = localStorage.getItem(tokenKey);
+                                    if (tokenProjectId === projectData.id) {
+                                        const token = tokenKey.replace('token_', '');
+                                        if (token.startsWith('worker_')) {
+                                            workerToken = token;
+                                        } else if (token.startsWith('viewer_')) {
+                                            viewerToken = token;
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            projects.push({
+                                ...projectData,
+                                workerToken,
+                                viewerToken
+                            });
+                        }
+                    } catch (e) {
+                        console.error('解析项目数据失败', e);
+                    }
                 }
             }
             
-            if (projectCount > 0) {
-                console.log(`📊 当前有 ${projectCount} 个已创建的项目`);
+            // 按创建时间倒序排序
+            projects.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            return projects;
+        }
+        
+        // 获取项目状态
+        function getProjectStatus(project) {
+            if (project.terminated) return 'terminated';
+            
+            const steps = project.steps || [];
+            const completedCount = steps.filter(s => s.status === 'completed').length;
+            const terminatedCount = steps.filter(s => s.status === 'terminated').length;
+            
+            if (terminatedCount > 0) return 'terminated';
+            if (completedCount === steps.length) return 'completed';
+            if (completedCount > 0) return 'in-progress';
+            return 'pending';
+        }
+        
+        // 获取状态文本
+        function getStatusText(status) {
+            const map = {
+                'pending': '等待开始',
+                'in-progress': '进行中',
+                'completed': '已完成',
+                'terminated': '已终止'
+            };
+            return map[status] || status;
+        }
+        
+        // 计算进度
+        function calculateProgress(project) {
+            const steps = project.steps || [];
+            if (steps.length === 0) return 0;
+            const completedCount = steps.filter(s => s.status === 'completed').length;
+            return Math.round((completedCount / steps.length) * 100);
+        }
+        
+        // 获取所有工作者（用于筛选）
+        function getAllWorkers(projects) {
+            const workers = new Set();
+            projects.forEach(project => {
+                (project.workers || []).forEach(worker => workers.add(worker));
+            });
+            return Array.from(workers).sort();
+        }
+        
+        // 删除项目
+        function deleteProject(projectId, event) {
+            event.stopPropagation(); // 阻止卡片点击事件
+            
+            if (confirm('确定要删除该项目吗？此操作不可恢复！')) {
+                // 删除项目数据
+                localStorage.removeItem(`project_${projectId}`);
+                
+                // 删除相关的token
+                for (let i = localStorage.length - 1; i >= 0; i--) {
+                    const key = localStorage.key(i);
+                    if (key && key.startsWith('token_')) {
+                        const tokenProjectId = localStorage.getItem(key);
+                        if (tokenProjectId === projectId) {
+                            localStorage.removeItem(key);
+                        }
+                    }
+                }
+                
+                // 刷新列表
+                loadAndDisplayProjects();
+                
+                alert('项目已删除');
             }
+        }
+        
+        // 加载并显示项目列表
+        function loadAndDisplayProjects() {
+            const projects = loadProjects();
+            displayProjects(projects);
+        }
+        
+        // 显示项目列表
+        function displayProjects(projects) {
+            const listContainer = document.getElementById('projectsList');
+            const countSpan = document.getElementById('projectCount');
+            const workerFilter = document.getElementById('workerFilter');
+            
+            countSpan.textContent = projects.length;
+            
+            // 更新工作者筛选器
+            const allWorkers = getAllWorkers(loadProjects());
+            workerFilter.innerHTML = '<option value="all">全部工作者</option>';
+            allWorkers.forEach(worker => {
+                const option = document.createElement('option');
+                option.value = worker;
+                option.textContent = worker;
+                workerFilter.appendChild(option);
+            });
+            
+            if (projects.length === 0) {
+                listContainer.innerHTML = '<div class="empty-projects">暂无历史项目，请创建新项目</div>';
+                return;
+            }
+            
+            let html = '';
+            projects.forEach(project => {
+                const status = getProjectStatus(project);
+                const statusText = getStatusText(status);
+                const progress = calculateProgress(project);
+                const createdDate = new Date(project.createdAt).toLocaleString();
+                
+                // 生成链接
+                const baseUrl = window.location.href.split('?')[0].replace('index.html', 'project.html');
+                const workerUrl = project.workerToken ? 
+                    `${baseUrl}?token=${encodeURIComponent(project.workerToken)}&role=worker` : '#';
+                const viewerUrl = project.viewerToken ? 
+                    `${baseUrl}?token=${encodeURIComponent(project.viewerToken)}&role=viewer` : '#';
+                
+                html += `
+                    <div class="project-item ${status}" onclick="window.open('${workerUrl}', '_blank')">
+                        <div class="project-item-header">
+                            <span class="project-item-title">${project.name}</span>
+                            <span class="project-item-dept">${project.department}</span>
+                        </div>
+                        <div class="project-item-meta">
+                            <span>创建：${createdDate}</span>
+                            <span>进度：${progress}%</span>
+                            <span>步骤：${project.steps ? project.steps.length : 4}</span>
+                        </div>
+                        <div class="project-item-workers">
+                            ${(project.workers || []).map(w => 
+                                `<span class="worker-tag">${w}</span>`
+                            ).join('')}
+                        </div>
+                        <div class="project-item-progress">
+                            <div class="progress-bar-fill ${status}" style="width: ${progress}%"></div>
+                        </div>
+                        <div class="project-item-footer">
+                            <span class="project-item-status ${status}">${statusText}</span>
+                            <div>
+                                <button class="delete-btn" onclick="deleteProject('${project.id}', event)">删除</button>
+                                <span style="color: #999; font-size: 11px; margin-left: 10px;">点击卡片查看</span>
+                            </div>
+                        </div>
+                        <div class="project-links" onclick="event.stopPropagation()">
+                            <a href="${workerUrl}" target="_blank" class="project-link-btn worker-link-btn">工作者</a>
+                            <a href="${viewerUrl}" target="_blank" class="project-link-btn viewer-link-btn">查看者</a>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            listContainer.innerHTML = html;
+        }
+        
+        // 筛选项目
+        function filterProjects() {
+            const searchText = document.getElementById('searchProject').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const workerFilter = document.getElementById('workerFilter').value;
+            
+            const allProjects = loadProjects();
+            
+            const filtered = allProjects.filter(project => {
+                // 搜索过滤
+                const matchesSearch = searchText === '' || 
+                    project.name.toLowerCase().includes(searchText) ||
+                    project.department.toLowerCase().includes(searchText);
+                
+                // 状态过滤
+                const projectStatus = getProjectStatus(project);
+                const matchesStatus = statusFilter === 'all' || projectStatus === statusFilter;
+                
+                // 工作者过滤
+                const matchesWorker = workerFilter === 'all' || 
+                    (project.workers || []).includes(workerFilter);
+                
+                return matchesSearch && matchesStatus && matchesWorker;
+            });
+            
+            displayProjects(filtered);
+        }
+        
+        // 页面加载时初始化
+        window.onload = function() {
+            initStepsConfig();
+            loadAndDisplayProjects();
         }
     </script>
 </body>
