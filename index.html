@@ -721,14 +721,16 @@
             localStorage.setItem(`token_${workerToken}`, projectId);
             localStorage.setItem(`token_${viewerToken}`, projectId);
             
-            // 生成链接
+            // 生成链接 - 修复版本
+            let baseUrl;
             const currentPath = window.location.pathname;
             const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
-            let baseUrl;
             
             if (window.location.protocol === 'file:') {
+                // 本地文件系统
                 baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'project.html';
             } else {
+                // GitHub Pages 或 HTTP 服务器
                 baseUrl = window.location.origin + basePath + 'project.html';
             }
             
@@ -757,9 +759,6 @@
             document.getElementById('department').value = '';
             document.getElementById('workerNames').value = '';
             document.getElementById('projectDesc').value = '';
-            
-            // 重置步骤配置
-            //resetToDefaultSteps();
             
             // 刷新项目列表
             loadAndDisplayProjects();
@@ -935,6 +934,17 @@
                 return;
             }
             
+            // 生成基础URL - 修复版本
+            let baseUrl;
+            const currentPath = window.location.pathname;
+            const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
+            
+            if (window.location.protocol === 'file:') {
+                baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'project.html';
+            } else {
+                baseUrl = window.location.origin + basePath + 'project.html';
+            }
+            
             let html = '';
             projects.forEach(project => {
                 const status = getProjectStatus(project);
@@ -943,7 +953,6 @@
                 const createdDate = new Date(project.createdAt).toLocaleString();
                 
                 // 生成链接
-                const baseUrl = window.location.href.split('?')[0].replace('index.html', 'project.html');
                 const workerUrl = project.workerToken ? 
                     `${baseUrl}?token=${encodeURIComponent(project.workerToken)}&role=worker` : '#';
                 const viewerUrl = project.viewerToken ? 
