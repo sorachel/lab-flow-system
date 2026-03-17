@@ -42,6 +42,26 @@
             font-weight: bold;
         }
         
+        /* 工作者选择器样式 */
+        .worker-selector {
+            margin-right: 15px;
+        }
+        
+        .worker-selector select {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #2196F3;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            outline: none;
+        }
+        
+        .worker-selector select:focus {
+            border-color: #1976d2;
+            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+        }
+        
         .project-info {
             background: white;
             padding: 25px;
@@ -59,7 +79,7 @@
             flex-wrap: wrap;
         }
         
-        .department-tag {
+        .platform-tag {
             background: #e3f2fd;
             color: #1976d2;
             padding: 8px 20px;
@@ -86,6 +106,12 @@
             flex-wrap: wrap;
         }
         
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -107,26 +133,6 @@
         .role-badge.viewer {
             background: #FF9800;
             color: white;
-        }
-        
-        /* 工作者选择器样式 */
-        .worker-selector {
-            margin-right: 15px;
-        }
-        
-        .worker-selector select {
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: 1px solid #2196F3;
-            background: white;
-            font-size: 14px;
-            cursor: pointer;
-            outline: none;
-        }
-        
-        .worker-selector select:focus {
-            border-color: #1976d2;
-            box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
         }
         
         /* 进度条 */
@@ -309,9 +315,120 @@
             background: #138496;
         }
         
+        .btn-upload {
+            background: #6f42c1;
+            color: white;
+        }
+        
+        .btn-upload:hover {
+            background: #5e35b1;
+        }
+        
         .btn:disabled {
             background: #ccc;
             cursor: not-allowed;
+        }
+        
+        /* 文件上传区域样式 */
+        .upload-section {
+            margin-top: 30px;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .upload-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .upload-header h3 {
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .file-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .file-item {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .file-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .file-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .file-name {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .file-meta {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .file-actions button {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        
+        .upload-input {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border: 2px dashed #ddd;
+            text-align: center;
+        }
+        
+        .upload-input input[type="file"] {
+            display: none;
+        }
+        
+        .upload-input label {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #6f42c1;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .upload-input label:hover {
+            background: #5e35b1;
+        }
+        
+        .empty-files {
+            text-align: center;
+            color: #999;
+            padding: 40px;
+            font-style: italic;
         }
         
         /* 日志面板样式 */
@@ -380,7 +497,7 @@
             border-radius: 15px;
             font-weight: bold;
             font-size: 12px;
-            min-width: 80px;
+            min-width: 60px;
             text-align: center;
         }
         
@@ -403,6 +520,10 @@
         
         .log-action.restarted {
             color: #17a2b8;
+        }
+        
+        .log-action.upload {
+            color: #6f42c1;
         }
         
         .empty-logs {
@@ -445,7 +566,14 @@
         
         .modal-content h3 {
             margin-bottom: 20px;
+        }
+        
+        .modal-content h3.terminate {
             color: #dc3545;
+        }
+        
+        .modal-content h3.restart {
+            color: #17a2b8;
         }
         
         .modal-content textarea {
@@ -493,6 +621,17 @@
                 width: 100%;
                 margin-right: 0;
             }
+            
+            .file-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .file-actions {
+                width: 100%;
+                justify-content: flex-start;
+            }
         }
     </style>
 </head>
@@ -501,7 +640,7 @@
         <div class="nav-content">
             <h2>南京鼓楼医院中心实验室</h2>
             <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-                <!-- 工作者选择器（只在工作者模式显示） -->
+                <!-- 工作者选择器 -->
                 <div id="workerSelector" style="display: none;" class="worker-selector">
                     <select id="workerSelect" onchange="changeWorker()">
                         <option value="">选择工作者</option>
@@ -532,6 +671,28 @@
             <!-- 步骤会动态生成 -->
         </div>
         
+        <!-- 实验结果上传区域 -->
+        <div class="upload-section" id="uploadSection">
+            <div class="upload-header">
+                <h3>实验结果</h3>
+                <span class="log-count" id="fileCount">0个文件</span>
+            </div>
+            
+            <!-- 工作者模式下显示上传控件 -->
+            <div id="workerUpload" style="display: none;">
+                <div class="upload-input">
+                    <input type="file" id="fileInput" multiple onchange="handleFileUpload()">
+                    <label for="fileInput">选择文件上传</label>
+                    <p style="color: #999; font-size: 12px; margin-top: 10px;">支持上传图片、文档、表格等实验数据</p>
+                </div>
+            </div>
+            
+            <!-- 文件列表 -->
+            <div class="file-list" id="fileList">
+                <!-- 文件列表会动态显示 -->
+            </div>
+        </div>
+        
         <!-- 日志面板 -->
         <div class="logs-panel" id="logsPanel">
             <div class="logs-header">
@@ -559,7 +720,7 @@
     <!-- 终止原因输入模态框 -->
     <div id="terminationModal" class="modal">
         <div class="modal-content">
-            <h3>填写终止原因</h3>
+            <h3 class="terminate">填写终止原因</h3>
             <p>请说明为什么终止该步骤：</p>
             <textarea id="terminationReason" rows="4" placeholder="例如：样品污染、设备故障、操作失误等..."></textarea>
             <div class="modal-buttons">
@@ -572,7 +733,7 @@
     <!-- 重启确认模态框 -->
     <div id="restartModal" class="modal">
         <div class="modal-content">
-            <h3>确认重启</h3>
+            <h3 class="restart">确认重启</h3>
             <p>确定要重启该步骤吗？重启后将可以重新开始操作。</p>
             <div class="modal-buttons">
                 <button class="btn btn-secondary" onclick="closeRestartModal()">取消</button>
@@ -615,6 +776,11 @@
             
             currentProject = JSON.parse(projectData);
             
+            // 确保files数组存在
+            if (!currentProject.files) {
+                currentProject.files = [];
+            }
+            
             // 设置角色模式
             document.body.classList.add(role === 'worker' ? 'worker-mode' : 'viewer-mode');
             
@@ -628,6 +794,7 @@
             // 如果是工作者模式，显示工作者选择器
             if (role === 'worker') {
                 displayWorkerSelector();
+                document.getElementById('workerUpload').style.display = 'block';
             }
             
             // 显示项目信息
@@ -635,6 +802,9 @@
             
             // 显示步骤
             displaySteps();
+            
+            // 显示文件列表
+            displayFiles();
             
             // 显示日志
             displayLogs();
@@ -699,13 +869,16 @@
             
             infoDiv.innerHTML = `
                 <div class="project-header">
-                    <span class="department-tag">${currentProject.department || '未指定科室'}</span>
+                    <span class="platform-tag">${currentProject.platform || '未指定平台'}</span>
                     <span class="project-name">${currentProject.name}</span>
                 </div>
                 <p style="color: #666; margin: 15px 0;">${currentProject.description || '无项目描述'}</p>
                 <div class="project-meta">
-                    <span>创建时间：${new Date(currentProject.createdAt).toLocaleString()}</span>
-                    <span>工作者：${currentProject.workers ? currentProject.workers.join('、') : '未指定'}</span>
+                    <span class="meta-item">创建时间：${new Date(currentProject.createdAt).toLocaleString()}</span>
+                    <span class="meta-item">项目类型：${currentProject.projectType || '院内'}</span>
+                    <span class="meta-item">科室：${currentProject.department || '未指定'}</span>
+                    <span class="meta-item">课题组：${currentProject.researchGroup || '未指定'}</span>
+                    <span class="meta-item">联络人：${currentProject.groupContact || '未指定'}</span>
                 </div>
             `;
         }
@@ -731,7 +904,7 @@
                         <span class="step-status ${statusClass}">${statusText}</span>
                     </div>
                     <div class="step-content">
-                        ${getStepDescription(step.id)}
+                        ${step.description || getStepDescription(step.id)}
                     </div>
                     ${step.terminationReason ? `
                         <div class="termination-reason">
@@ -747,7 +920,7 @@
             });
         }
         
-        // 获取步骤描述
+        // 获取步骤描述（兼容旧数据）
         function getStepDescription(stepId) {
             const descriptions = {
                 1: '确认收到实验样品，检查样品状态和数量',
@@ -845,15 +1018,14 @@
                 }
                 
                 // 保存到localStorage
-                const projectId = localStorage.getItem(`token_${token}`);
-                localStorage.setItem(`project_${projectId}`, JSON.stringify(currentProject));
+                saveProject();
                 
                 // 刷新界面
                 displaySteps();
                 displayLogs();
                 updateProgress();
                 
-                if (stepId === 4 && newStatus === 'completed') {
+                if (stepId === currentProject.steps.length && newStatus === 'completed') {
                     alert('恭喜！实验流程全部完成！');
                 }
             }
@@ -918,6 +1090,7 @@
                 else if (log.action.includes('完成')) actionClass = 'completed';
                 else if (log.action.includes('开始')) actionClass = 'started';
                 else if (log.action.includes('重启')) actionClass = 'restarted';
+                else if (log.action.includes('上传')) actionClass = 'upload';
                 
                 html += `
                     <div class="log-entry">
@@ -1024,8 +1197,7 @@
                     document.getElementById('globalTerminationReason').textContent = `终止原因：${reason}`;
                 }
                 
-                const projectId = localStorage.getItem(`token_${token}`);
-                localStorage.setItem(`project_${projectId}`, JSON.stringify(currentProject));
+                saveProject();
                 
                 displayProjectInfo();
                 displaySteps();
@@ -1098,8 +1270,7 @@
                     document.getElementById('globalTerminationInfo').style.display = 'none';
                 }
                 
-                const projectId = localStorage.getItem(`token_${token}`);
-                localStorage.setItem(`project_${projectId}`, JSON.stringify(currentProject));
+                saveProject();
                 
                 displaySteps();
                 displayLogs();
@@ -1107,6 +1278,138 @@
                 
                 alert(`步骤${stepId}已重启，可以重新开始操作`);
             }
+        }
+        
+        // 处理文件上传
+        function handleFileUpload() {
+            const fileInput = document.getElementById('fileInput');
+            const files = fileInput.files;
+            
+            if (files.length === 0) return;
+            
+            const currentWorker = getCurrentWorker();
+            if (!currentWorker) {
+                alert('请先选择工作者');
+                return;
+            }
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const fileData = {
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        data: e.target.result,
+                        uploadTime: new Date().toISOString(),
+                        uploadedBy: currentWorker
+                    };
+                    
+                    if (!currentProject.files) {
+                        currentProject.files = [];
+                    }
+                    
+                    currentProject.files.push(fileData);
+                    
+                    // 添加上传日志
+                    addLog(currentWorker, '实验结果', `上传文件：${file.name}`);
+                    
+                    saveProject();
+                    displayFiles();
+                    displayLogs();
+                };
+                
+                reader.readAsDataURL(file);
+            }
+            
+            // 清空input，允许重复上传相同文件
+            fileInput.value = '';
+            
+            alert(`已上传 ${files.length} 个文件`);
+        }
+        
+        // 显示文件列表
+        function displayFiles() {
+            const fileList = document.getElementById('fileList');
+            const fileCount = document.getElementById('fileCount');
+            
+            if (!currentProject.files || currentProject.files.length === 0) {
+                fileList.innerHTML = '<div class="empty-files">暂无上传的实验结果</div>';
+                fileCount.textContent = '0个文件';
+                return;
+            }
+            
+            fileCount.textContent = currentProject.files.length + '个文件';
+            
+            let html = '';
+            currentProject.files.forEach((file, index) => {
+                const uploadTime = new Date(file.uploadTime).toLocaleString();
+                const fileSize = (file.size / 1024).toFixed(2) + ' KB';
+                
+                html += `
+                    <div class="file-item">
+                        <div class="file-info">
+                            <span class="file-name">${file.name}</span>
+                            <span class="file-meta">${fileSize} · 上传于 ${uploadTime} · 上传者：${file.uploadedBy}</span>
+                        </div>
+                        <div class="file-actions">
+                            <button class="btn btn-secondary" onclick="downloadFile(${index})" style="padding: 5px 10px;">下载</button>
+                            ${role === 'worker' ? `
+                                <button class="btn btn-danger" onclick="deleteFile(${index})" style="padding: 5px 10px;">删除</button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            fileList.innerHTML = html;
+        }
+        
+        // 下载文件
+        function downloadFile(index) {
+            const file = currentProject.files[index];
+            
+            // 从base64数据创建下载链接
+            const link = document.createElement('a');
+            link.href = file.data;
+            link.download = file.name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // 删除文件
+        function deleteFile(index) {
+            if (role !== 'worker') {
+                alert('您没有权限删除文件');
+                return;
+            }
+            
+            const currentWorker = getCurrentWorker();
+            if (!currentWorker) {
+                alert('请先选择工作者');
+                return;
+            }
+            
+            if (confirm('确定要删除该文件吗？')) {
+                const fileName = currentProject.files[index].name;
+                currentProject.files.splice(index, 1);
+                
+                // 添加删除日志
+                addLog(currentWorker, '实验结果', `删除文件：${fileName}`);
+                
+                saveProject();
+                displayFiles();
+                displayLogs();
+            }
+        }
+        
+        // 保存项目到localStorage
+        function saveProject() {
+            const projectId = localStorage.getItem(`token_${token}`);
+            localStorage.setItem(`project_${projectId}`, JSON.stringify(currentProject));
         }
         
         // 检查全局终止状态
@@ -1121,8 +1424,11 @@
         
         // 更新进度条
         function updateProgress() {
-            const completedSteps = currentProject.steps.filter(s => s.status === 'completed').length;
-            const progress = (completedSteps / 4) * 100;
+            const steps = currentProject.steps || [];
+            if (steps.length === 0) return;
+            
+            const completedSteps = steps.filter(s => s.status === 'completed').length;
+            const progress = (completedSteps / steps.length) * 100;
             document.getElementById('progressFill').style.width = `${progress}%`;
             
             if (currentProject.terminated) {

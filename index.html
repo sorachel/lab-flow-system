@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>南京鼓楼医院中心实验室实验流程管理系统</title>
+    <!-- 引入SheetJS用于导出Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,7 +35,7 @@
             font-weight: bold;
             color: #555;
         }
-        input, textarea {
+        input, textarea, select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
@@ -70,6 +72,19 @@
         }
         .btn-info:hover {
             background: #138496;
+        }
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        .btn-success {
+            background: #28a745;
+        }
+        .btn-success:hover {
+            background: #218838;
         }
         .links-panel {
             margin-top: 30px;
@@ -181,6 +196,20 @@
             font-size: 14px;
         }
         
+        /* 模板管理样式 */
+        .template-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .template-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
         /* 项目目录样式 */
         .projects-panel {
             background: white;
@@ -278,9 +307,17 @@
             color: #333;
         }
         
-        .project-item-dept {
+        .project-item-platform {
             background: #e3f2fd;
             color: #1976d2;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+        }
+        
+        .project-item-dept {
+            background: #f0f0f0;
+            color: #666;
             padding: 3px 10px;
             border-radius: 15px;
             font-size: 12px;
@@ -438,23 +475,90 @@
         <h1>南京鼓楼医院中心实验室</h1>
         <h2 style="color: #666; font-size: 18px; margin-bottom: 20px;">创建新实验项目</h2>
         
-        <!-- 项目名称 -->
+        <!-- 平台选择 -->
         <div class="form-group">
-            <label>项目名称：</label>
-            <input type="text" id="projectName" placeholder="例如：基因组学平台-001">
+            <label>选择平台：</label>
+            <select id="platformSelect" onchange="updateProjectName()">
+                <option value="">请选择平台</option>
+                <option value="基因组学平台">基因组学平台</option>
+                <option value="流式分析平台">高维流式分析/分选平台</option>
+                <option value="免疫分析平台">免疫分析平台</option>
+                <option value="显微成像平台">显微成像平台</option>
+                <option value="胞外囊泡平台">胞外囊泡分析平台</option>
+                <option value="细胞培养平台">细胞培养实验平台</option>
+                <option value="病理技术平台">病理技术平台</option>
+                <option value="生物安全实验室">生物安全二级实验室</option>
+                <option value="分子技术平台">分子技术平台</option>
+            </select>
         </div>
         
+        <!-- 项目序号 -->
+        <div class="form-group">
+            <label>项目序号：</label>
+            <input type="text" id="projectNumber" placeholder="例如：001" onchange="updateProjectName()">
+        </div>
+        
+        <!-- 项目名称（自动生成） -->
+        <div class="form-group">
+            <label>项目名称（自动生成）：</label>
+            <input type="text" id="projectName" readonly placeholder="平台-序号" style="background: #f5f5f5;">
+        </div>
+        
+        
+         <!-- 院内/院外选项 -->
+        <div class="form-group">
+            <label>项目类型：</label>
+            <div style="display: flex; gap: 20px; padding: 10px 0;">
+                  <label style="display: flex; align-items: center; gap: 5px; font-weight: normal; white-space: nowrap;">
+                         <input type="radio" name="projectType" value="院内" checked>院内项目
+                  </label>
+                  <label style="display: flex; align-items: center; gap: 5px; font-weight: normal; white-space: nowrap;">
+                         <input type="radio" name="projectType" value="院外">院外项目
+                  </label>
+           </div>
+         </div>
+
+         
+
+
         <!-- 科室输入框 -->
         <div class="form-group">
             <label>科室：</label>
             <input type="text" id="department" placeholder="例如：肿瘤科、神经内科、消化科等">
         </div>
         
+        <!-- 课题组 -->
+        <div class="form-group">
+            <label>课题组：</label>
+            <input type="text" id="researchGroup" placeholder="例如：xx课题组">
+        </div>
+        
+        <!-- 课题组联络人 -->
+        <div class="form-group">
+            <label>课题组联络人：</label>
+            <input type="text" id="groupContact" placeholder="例如：张三">
+        </div>
+        
         <!-- 工作者姓名输入框 -->
         <div class="form-group">
-            <label>工作者姓名（多个用逗号分隔）：</label>
+            <label>工作者姓名（多个用英文逗号分隔）：</label>
             <input type="text" id="workerNames" placeholder="例如：张三,李四,王五">
             <div class="note">每个工作者会有独立的操作记录</div>
+        </div>
+
+        <!-- 模板管理 -->
+        <div class="template-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3 style="color: #333;">步骤模板管理</h3>
+                <button type="button" class="btn-info" onclick="loadTemplates()" style="padding: 5px 10px; font-size: 12px;">刷新模板</button>
+            </div>
+            <div class="template-controls">
+                <select id="templateSelect" style="flex: 1;">
+                    <option value="">选择模板</option>
+                </select>
+                <button type="button" class="btn-secondary" onclick="applyTemplate()">应用模板</button>
+                <button type="button" class="btn-success" onclick="saveAsTemplate()">保存为模板</button>
+            </div>
         </div>
 
         <!-- 实验步骤配置 -->
@@ -513,12 +617,25 @@
             <h2>历史项目目录</h2>
             <div>
                 <span class="project-count" id="projectCount">0</span>
-                <button class="refresh-btn" onclick="loadAndDisplayProjects()" style="margin-left: 10px;">刷新</button>
+                <button class="refresh-btn" onclick="exportToExcel()" style="background: #28a745; margin-left: 5px;">导出Excel</button>
+                <button class="refresh-btn" onclick="loadAndDisplayProjects()" style="margin-left: 5px;">刷新</button>
             </div>
         </div>
         
         <div class="project-filters">
-            <input type="text" id="searchProject" placeholder="搜索项目名称或科室..." oninput="filterProjects()">
+            <input type="text" id="searchProject" placeholder="搜索项目名称、科室、课题组..." oninput="filterProjects()">
+            <select id="platformFilter" onchange="filterProjects()">
+                <option value="all">全部平台</option>
+                <option value="基因组学平台">基因组学平台</option>
+                <option value="流式分析平台">流式分析平台</option>
+                <option value="免疫分析平台">免疫分析平台</option>
+                <option value="显微成像平台">显微成像平台</option>
+                <option value="胞外囊泡平台">胞外囊泡平台</option>
+                <option value="细胞培养平台">细胞培养平台</option>
+                <option value="病理技术平台">病理技术平台</option>
+                <option value="生物安全实验室">生物安全实验室</option>
+                <option value="分子技术平台">分子技术平台</option>
+            </select>
             <select id="statusFilter" onchange="filterProjects()">
                 <option value="all">全部状态</option>
                 <option value="in-progress">进行中</option>
@@ -538,18 +655,34 @@
     <script>
         // 默认步骤
         const defaultSteps = [
-            { id: 1, name: '收到实验样品', description: '确认收到实验样品，检查样品状态和数量', status: 'pending' },
-            { id: 2, name: '进行实验', description: '按照实验方案进行实验操作，记录实验数据', status: 'pending' },
-            { id: 3, name: '进行分析', description: '分析实验数据，生成分析报告', status: 'pending' },
-            { id: 4, name: '得到最终结果', description: '整理实验结果，得出最终结论', status: 'pending' }
-        ];
+    { id: 1, name: '样品接收与验收', description: '接收实验样品，核对样品信息，检查样品状态及数量是否符合要求', status: 'pending' },
+    { id: 2, name: '实验操作与数据采集', description: '按照实验方案进行规范化操作，实时记录原始实验数据', status: 'pending' },
+    { id: 3, name: '数据分析与处理', description: '对实验数据进行统计分析，生成初步分析报告', status: 'pending' },
+    { id: 4, name: '结果审核与出具报告', description: '审核实验结果，撰写最终实验报告，完成结果交付', status: 'pending' }
+    ];
 
         // 当前步骤配置
         let currentSteps = JSON.parse(JSON.stringify(defaultSteps));
 
+        // 更新项目名称（平台-序号）
+        function updateProjectName() {
+            const platform = document.getElementById('platformSelect').value;
+            const number = document.getElementById('projectNumber').value;
+            if (platform && number) {
+                document.getElementById('projectName').value = `${platform}-${number}`;
+            } else if (platform) {
+                document.getElementById('projectName').value = platform;
+            } else if (number) {
+                document.getElementById('projectName').value = number;
+            } else {
+                document.getElementById('projectName').value = '';
+            }
+        }
+
         // 初始化步骤配置显示
         function initStepsConfig() {
             renderStepsConfig();
+            loadTemplates();
         }
 
         // 渲染步骤配置
@@ -650,6 +783,45 @@
             }
         }
 
+        // 保存为模板
+        function saveAsTemplate() {
+            const templateName = prompt('请输入模板名称（例如：基因组学标准流程）');
+            if (templateName) {
+                const templates = JSON.parse(localStorage.getItem('stepTemplates') || '{}');
+                templates[templateName] = currentSteps;
+                localStorage.setItem('stepTemplates', JSON.stringify(templates));
+                alert('模板保存成功');
+                loadTemplates();
+            }
+        }
+
+        // 加载模板列表
+        function loadTemplates() {
+            const templates = JSON.parse(localStorage.getItem('stepTemplates') || '{}');
+            const select = document.getElementById('templateSelect');
+            select.innerHTML = '<option value="">选择模板</option>';
+            Object.keys(templates).sort().forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                select.appendChild(option);
+            });
+        }
+
+        // 应用模板
+        function applyTemplate() {
+            const templateName = document.getElementById('templateSelect').value;
+            if (templateName) {
+                const templates = JSON.parse(localStorage.getItem('stepTemplates') || '{}');
+                if (templates[templateName]) {
+                    if (confirm('应用模板将覆盖当前步骤配置，确定吗？')) {
+                        currentSteps = JSON.parse(JSON.stringify(templates[templateName]));
+                        renderStepsConfig();
+                    }
+                }
+            }
+        }
+
         // 生成唯一的项目ID
         function generateProjectId() {
             return 'proj_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -663,14 +835,23 @@
         // 创建新项目
         function createProject() {
             // 获取表单值
+            const platform = document.getElementById('platformSelect').value;
+            const projectNumber = document.getElementById('projectNumber').value.trim();
             const projectName = document.getElementById('projectName').value.trim();
             const department = document.getElementById('department').value.trim();
+            const researchGroup = document.getElementById('researchGroup').value.trim();
+            const groupContact = document.getElementById('groupContact').value.trim();
             const workerNamesInput = document.getElementById('workerNames').value.trim();
             const projectDesc = document.getElementById('projectDesc').value.trim();
-            
+            const projectType = document.querySelector('input[name="projectType"]:checked').value;
             // 验证必填字段
-            if (!projectName) {
-                alert('请输入项目名称');
+            if (!platform) {
+                alert('请选择平台');
+                return;
+            }
+            
+            if (!projectNumber) {
+                alert('请输入项目序号');
                 return;
             }
             
@@ -702,8 +883,13 @@
             // 保存项目信息到localStorage
             const projectData = {
                 id: projectId,
-                department: department,
+                platform: platform,
+                projectNumber: projectNumber,
                 name: projectName,
+                projectType: projectType,
+                department: department,
+                researchGroup: researchGroup || '未指定课题组',
+                groupContact: groupContact || '未指定',
                 description: projectDesc || '无描述',
                 createdAt: new Date().toISOString(),
                 workers: workerNames,
@@ -721,16 +907,14 @@
             localStorage.setItem(`token_${workerToken}`, projectId);
             localStorage.setItem(`token_${viewerToken}`, projectId);
             
-            // 生成链接 - 修复版本
+            // 生成链接
             let baseUrl;
             const currentPath = window.location.pathname;
             const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
             
             if (window.location.protocol === 'file:') {
-                // 本地文件系统
                 baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'project.html';
             } else {
-                // GitHub Pages 或 HTTP 服务器
                 baseUrl = window.location.origin + basePath + 'project.html';
             }
             
@@ -743,8 +927,11 @@
             
             // 显示项目概要
             document.getElementById('projectSummary').innerHTML = `
-                <strong>科室：</strong> ${department}<br>
+                <strong>平台：</strong> ${platform}<br>
                 <strong>项目：</strong> ${projectName}<br>
+                <strong>科室：</strong> ${department}<br>
+                <strong>课题组：</strong> ${researchGroup || '未指定'}<br>
+                <strong>联络人：</strong> ${groupContact || '未指定'}<br>
                 <strong>工作者：</strong> ${workerNames.join('、')}<br>
                 <strong>步骤数：</strong> ${currentSteps.length}
             `;
@@ -755,8 +942,12 @@
             console.log('项目创建成功！');
             
             // 清空表单
+            document.getElementById('platformSelect').value = '';
+            document.getElementById('projectNumber').value = '';
             document.getElementById('projectName').value = '';
             document.getElementById('department').value = '';
+            document.getElementById('researchGroup').value = '';
+            document.getElementById('groupContact').value = '';
             document.getElementById('workerNames').value = '';
             document.getElementById('projectDesc').value = '';
             
@@ -879,6 +1070,15 @@
             return Array.from(workers).sort();
         }
         
+        // 获取所有平台（用于筛选）
+        function getAllPlatforms(projects) {
+            const platforms = new Set();
+            projects.forEach(project => {
+                if (project.platform) platforms.add(project.platform);
+            });
+            return Array.from(platforms).sort();
+        }
+        
         // 删除项目
         function deleteProject(projectId, event) {
             event.stopPropagation(); // 阻止卡片点击事件
@@ -905,6 +1105,40 @@
             }
         }
         
+        // 导出为Excel
+        function exportToExcel() {
+            const projects = loadProjects();
+            
+            if (projects.length === 0) {
+                alert('暂无项目可导出');
+                return;
+            }
+            
+            // 转换为表格格式
+            const data = projects.map(p => ({
+                '平台': p.platform || '未指定',
+                '项目序号': p.projectNumber || '未指定',
+                '项目名称': p.name,
+                '科室': p.department || '未指定',
+                '课题组': p.researchGroup || '未指定',
+                '联络人': p.groupContact || '未指定',
+                '工作者': (p.workers || []).join('、'),
+                '创建时间': new Date(p.createdAt).toLocaleString(),
+                '状态': getStatusText(getProjectStatus(p)),
+                '进度': calculateProgress(p) + '%',
+                '步骤数': p.steps ? p.steps.length : 0,
+                '项目ID': p.id
+            }));
+            
+            // 创建工作簿
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, "项目记录");
+            
+            // 导出Excel
+            XLSX.writeFile(wb, `实验室项目记录_${new Date().toISOString().slice(0,10)}.xlsx`);
+        }
+        
         // 加载并显示项目列表
         function loadAndDisplayProjects() {
             const projects = loadProjects();
@@ -916,6 +1150,7 @@
             const listContainer = document.getElementById('projectsList');
             const countSpan = document.getElementById('projectCount');
             const workerFilter = document.getElementById('workerFilter');
+            const platformFilter = document.getElementById('platformFilter');
             
             countSpan.textContent = projects.length;
             
@@ -929,12 +1164,26 @@
                 workerFilter.appendChild(option);
             });
             
+            // 更新平台筛选器（保留已选择的平台）
+            const currentPlatform = platformFilter.value;
+            const allPlatforms = getAllPlatforms(loadProjects());
+            platformFilter.innerHTML = '<option value="all">全部平台</option>';
+            allPlatforms.forEach(platform => {
+                const option = document.createElement('option');
+                option.value = platform;
+                option.textContent = platform;
+                platformFilter.appendChild(option);
+            });
+            if (currentPlatform && currentPlatform !== 'all') {
+                platformFilter.value = currentPlatform;
+            }
+            
             if (projects.length === 0) {
                 listContainer.innerHTML = '<div class="empty-projects">暂无历史项目，请创建新项目</div>';
                 return;
             }
             
-            // 生成基础URL - 修复版本
+            // 生成基础URL
             let baseUrl;
             const currentPath = window.location.pathname;
             const basePath = currentPath.substring(0, currentPath.lastIndexOf('/') + 1);
@@ -962,12 +1211,19 @@
                     <div class="project-item ${status}" onclick="window.open('${workerUrl}', '_blank')">
                         <div class="project-item-header">
                             <span class="project-item-title">${project.name}</span>
-                            <span class="project-item-dept">${project.department}</span>
+                            <div>
+                                <span class="project-item-platform">${project.platform || '未指定平台'}</span>
+                                <span class="project-item-dept">${project.department || '未指定科室'}</span>
+                            </div>
                         </div>
                         <div class="project-item-meta">
                             <span>创建：${createdDate}</span>
                             <span>进度：${progress}%</span>
-                            <span>步骤：${project.steps ? project.steps.length : 4}</span>
+                            <span>步骤：${project.steps ? project.steps.length : 0}</span>
+                        </div>
+                        <div class="project-item-meta">
+                            <span>课题组：${project.researchGroup || '未指定'}</span>
+                            <span>联络人：${project.groupContact || '未指定'}</span>
                         </div>
                         <div class="project-item-workers">
                             ${(project.workers || []).map(w => 
@@ -998,16 +1254,21 @@
         // 筛选项目
         function filterProjects() {
             const searchText = document.getElementById('searchProject').value.toLowerCase();
+            const platformFilter = document.getElementById('platformFilter').value;
             const statusFilter = document.getElementById('statusFilter').value;
             const workerFilter = document.getElementById('workerFilter').value;
             
             const allProjects = loadProjects();
             
             const filtered = allProjects.filter(project => {
-                // 搜索过滤
+                // 搜索过滤（搜索项目名称、科室、课题组）
                 const matchesSearch = searchText === '' || 
-                    project.name.toLowerCase().includes(searchText) ||
-                    project.department.toLowerCase().includes(searchText);
+                    (project.name && project.name.toLowerCase().includes(searchText)) ||
+                    (project.department && project.department.toLowerCase().includes(searchText)) ||
+                    (project.researchGroup && project.researchGroup.toLowerCase().includes(searchText));
+                
+                // 平台过滤
+                const matchesPlatform = platformFilter === 'all' || project.platform === platformFilter;
                 
                 // 状态过滤
                 const projectStatus = getProjectStatus(project);
@@ -1017,7 +1278,7 @@
                 const matchesWorker = workerFilter === 'all' || 
                     (project.workers || []).includes(workerFilter);
                 
-                return matchesSearch && matchesStatus && matchesWorker;
+                return matchesSearch && matchesPlatform && matchesStatus && matchesWorker;
             });
             
             displayProjects(filtered);
