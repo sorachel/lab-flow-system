@@ -324,6 +324,24 @@
             background: #5e35b1;
         }
         
+        .btn-export {
+            background: #6f42c1;
+            color: white;
+        }
+        
+        .btn-export:hover {
+            background: #5e35b1;
+        }
+        
+        .btn-import {
+            background: #fd7e14;
+            color: white;
+        }
+        
+        .btn-import:hover {
+            background: #e06b00;
+        }
+        
         .btn:disabled {
             background: #ccc;
             cursor: not-allowed;
@@ -576,6 +594,10 @@
             color: #17a2b8;
         }
         
+        .modal-content h3.import {
+            color: #fd7e14;
+        }
+        
         .modal-content textarea {
             width: 100%;
             padding: 10px;
@@ -654,6 +676,20 @@
     
     <div class="project-info" id="projectInfo">
         <!-- 项目信息会动态填充 -->
+    </div>
+    
+    <!-- 根据角色显示的操作按钮 -->
+    <div style="display: flex; gap: 10px; margin: 20px auto; max-width: 1200px; padding: 0 20px;">
+        <!-- 工作者模式按钮 -->
+        <div id="workerButtons" style="display: none; gap: 10px;">
+            <button class="btn btn-export" onclick="exportSingleProject()">导出此项目JSON</button>
+        </div>
+        
+        <!-- 查看者模式按钮 -->
+        <div id="viewerButtons" style="display: none; gap: 10px;">
+            <button class="btn btn-import" onclick="importSingleProject()">导入JSON到本地查看</button>
+            <button class="btn btn-export" onclick="exportSingleProject()">导出此项目JSON</button>
+        </div>
     </div>
     
     <div class="container">
@@ -756,21 +792,23 @@
         // 初始化页面
         function init() {
             if (!token || !role) {
-                showError('无效的访问链接');
+                // 如果没有token和role，显示导入按钮让用户导入
+                showImportOnlyMode();
                 return;
             }
             
             // 验证token并获取项目ID
             const projectId = localStorage.getItem(`token_${token}`);
             if (!projectId) {
-                showError('链接已失效或项目不存在');
+                // token无效，显示导入按钮
+                showImportOnlyMode();
                 return;
             }
             
             // 获取项目数据
             const projectData = localStorage.getItem(`project_${projectId}`);
             if (!projectData) {
-                showError('项目不存在');
+                showImportOnlyMode();
                 return;
             }
             
@@ -791,10 +829,14 @@
                 </span>
             `;
             
-            // 如果是工作者模式，显示工作者选择器
+            // 根据角色显示对应的按钮
             if (role === 'worker') {
+                document.getElementById('workerButtons').style.display = 'flex';
+                // 工作者模式显示工作者选择器
                 displayWorkerSelector();
                 document.getElementById('workerUpload').style.display = 'block';
+            } else {
+                document.getElementById('viewerButtons').style.display = 'flex';
             }
             
             // 显示项目信息
@@ -819,6 +861,26 @@
             if (role === 'worker') {
                 displayShareLinks(projectId);
             }
+        }
+        
+        // 显示仅导入模式（当项目不存在时）
+        function showImportOnlyMode() {
+            // 隐藏所有正常内容
+            document.querySelector('.project-info').style.display = 'none';
+            document.querySelector('.progress-bar').style.display = 'none';
+            document.querySelector('.progress-steps').style.display = 'none';
+            document.querySelector('.upload-section').style.display = 'none';
+            document.querySelector('.logs-panel').style.display = 'none';
+            
+            // 显示导入提示
+            const container = document.querySelector('.container');
+            container.innerHTML = `
+                <div style="text-align: center; padding: 50px; background: white; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <h2 style="color: #333; margin-bottom: 20px;">项目不存在</h2>
+                    <p style="color: #666; margin-bottom: 30px;">您可以通过导入JSON文件来查看项目</p>
+                    <button class="btn btn-import" onclick="importSingleProject()" style="padding: 15px 40px; font-size: 16px;">导入JSON文件</button>
+                </div>
+            `;
         }
         
         // 显示工作者选择器
@@ -1482,6 +1544,180 @@
                 </div>
             `;
         }
+        
+        // ========== 新增：导出/导入功能 ==========
+        
+        // 导出当前项目为JSON
+        function exportSingleProject() {
+            if (!currentProject) {
+                alert('项目数据不存在');
+                return;
+            }
+            
+            // 准备导出数据
+            const exportData = {
+                exportTime: new Date().toISOString(),
+                sourceComputer: getComputerName(),
+                role: role,
+                project: {
+                    ...currentProject,
+                    files: currentProject.files || [],
+                    logs: currentProject.logs || []
+                }
+            };
+            
+            // 生成文件名
+            const fileName = `${currentProject.name.replace(/[\\/:*?"<>|]/g, '_')}_${new Date().toISOString().slice(0,10)}.json`;
+            
+            // 导出JSON
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const blob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('项目已导出为JSON文件');
+        }
+        
+        // 导入JSON到本地查看
+        function importSingleProject() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    try {
+                        const importData = JSON.parse(e.target.result);
+                        
+                        // 处理不同格式
+                        let projectToImport;
+                        if (importData.project) {
+                            projectToImport = importData.project;
+                        } else if (importData.projects && importData.projects.length > 0) {
+                            projectToImport = importData.projects[0];
+                        } else {
+                            alert('无效的项目数据格式');
+                            return;
+                        }
+                        
+                        // 显示导入预览
+                        showImportPreview(projectToImport, importData);
+                        
+                    } catch (error) {
+                        alert('文件解析失败：' + error.message);
+                    }
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+        
+        // 获取电脑标识
+        function getComputerName() {
+            let computerName = localStorage.getItem('viewerComputerName');
+            if (!computerName) {
+                computerName = prompt('请输入这台电脑的名称（例如：办公室1、查看者电脑）');
+                if (computerName) {
+                    localStorage.setItem('viewerComputerName', computerName);
+                } else {
+                    computerName = '未知电脑';
+                }
+            }
+            return computerName;
+        }
+        
+        // 显示导入预览
+        function showImportPreview(project, importData) {
+            const sourceComputer = importData.sourceComputer || importData.computerName || '未知电脑';
+            const exportTime = new Date(importData.exportTime).toLocaleString();
+            
+            const previewHtml = `
+                <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.3); z-index: 1000; max-width: 500px;">
+                    <h3 style="margin-bottom: 20px; color: #333;">导入项目预览</h3>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                        <p><strong>来源电脑：</strong> ${sourceComputer}</p>
+                        <p><strong>导出时间：</strong> ${exportTime}</p>
+                        <p><strong>项目名称：</strong> ${project.name}</p>
+                        <p><strong>项目平台：</strong> ${project.platform || '未指定'}</p>
+                        <p><strong>创建时间：</strong> ${new Date(project.createdAt).toLocaleString()}</p>
+                        <p><strong>步骤数量：</strong> ${project.steps ? project.steps.length : 0}</p>
+                        <p><strong>文件数量：</strong> ${project.files ? project.files.length : 0}</p>
+                        <p><strong>日志数量：</strong> ${project.logs ? project.logs.length : 0}</p>
+                    </div>
+                    
+                    <div style="background: #e3f2fd; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                        <p style="color: #1976d2; margin: 0;">
+                            <strong>⚠️ 导入说明：</strong><br>
+                            - 导入后可以在本电脑查看此项目<br>
+                            - 所有文件和数据都会保存到本地<br>
+                            - 只能查看，不能修改（查看者模式）
+                        </p>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button class="btn btn-secondary" onclick="closePreview()">取消</button>
+                        <button class="btn btn-primary" onclick="confirmViewerImport(${JSON.stringify(project).replace(/"/g, '&quot;')})">确认导入</button>
+                    </div>
+                </div>
+                <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;" onclick="closePreview()"></div>
+            `;
+            
+            const previewDiv = document.createElement('div');
+            previewDiv.innerHTML = previewHtml;
+            document.body.appendChild(previewDiv);
+        }
+        
+        // 查看者确认导入
+        function confirmViewerImport(importedProject) {
+            try {
+                // 生成新的查看者token
+                const newViewerToken = 'viewer_' + importedProject.id + '_' + Date.now();
+                
+                // 准备项目数据，标记为只读
+                const projectToSave = {
+                    ...importedProject,
+                    importedAt: new Date().toISOString(),
+                    importedFrom: getComputerName(),
+                    isViewerCopy: true,
+                    viewerToken: newViewerToken
+                };
+                
+                // 保存项目
+                localStorage.setItem(`project_${importedProject.id}`, JSON.stringify(projectToSave));
+                localStorage.setItem(`token_${newViewerToken}`, importedProject.id);
+                
+                closePreview();
+                
+                alert('项目导入成功！正在跳转到查看页面...');
+                
+                // 跳转到查看者链接
+                const baseUrl = window.location.href.split('?')[0];
+                const viewerUrl = `${baseUrl}?token=${newViewerToken}&role=viewer`;
+                window.location.href = viewerUrl;
+                
+            } catch (error) {
+                alert('导入失败：' + error.message);
+                closePreview();
+            }
+        }
+        
+        // 关闭预览
+        function closePreview() {
+            const preview = document.querySelector('div[style*="position: fixed"]');
+            if (preview) preview.remove();
+        }
+        
+        // ========== 导出/导入功能结束 ==========
         
         // 启动
         init();
